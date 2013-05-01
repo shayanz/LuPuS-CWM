@@ -121,10 +121,11 @@ int install_zip(const char* packagefilepath)
 }
 
 #define ITEM_CHOOSE_ZIP       0
-#define ITEM_APPLY_SDCARD     1
-#define ITEM_SIG_CHECK        2
-#define ITEM_APPLY_SIDELOAD   3 
-#define ITEM_CHOOSE_ZIP_INT   4
+#define ITEM_MULTI_FLASH      1
+#define ITEM_APPLY_SDCARD     2
+#define ITEM_SIG_CHECK        3
+#define ITEM_APPLY_SIDELOAD   4 
+//#define ITEM_CHOOSE_ZIP_INT   3
 
 void show_install_update_menu()
 {
@@ -133,10 +134,11 @@ void show_install_update_menu()
                                 NULL
     };
     
-    char* install_menu_items[] = {  "choose zip from sdcard",
-                                    "apply /sdcard/update.zip",
+    char* install_menu_items[] = {  "Choose zip from SD card",
+				    "Choose Multiple zips from SD card",
+                                    "Apply /sdcard/update.zip",
                                     "Install zip from Sideload",
-                                    "toggle signature verification",
+                                    "Toggle Signature Verification",
                                     NULL,
                                     NULL };
 
@@ -158,6 +160,9 @@ void show_install_update_menu()
             case ITEM_SIG_CHECK:
                 toggle_signature_check();
                 break;
+	    case ITEM_MULTI_FLASH:
+                 show_multi_flash_menu();
+                 break; 
             case ITEM_APPLY_SDCARD:
             {
                 if (confirm_selection("Confirm install?", "Yes - Install /sdcard/update.zip"))
@@ -401,6 +406,105 @@ void show_choose_zip_menu(const char *mount_point)
     if (confirm_selection(confirm_install, confirm))
         install_zip(file);
 }
+
+
+/*****************************************/
+/*   DO NOT REMOVE THIS CREDITS HEARDER  */
+/* IF YOU MODIFY ANY PART OF THIS SOURCE */
+/*  YOU MUST AGREE TO SHARE THE CHANGES  */
+/*                                       */
+/*      Start Multi-Flash Zip code       */
+/*      Original code by PhilZ @xda      */
+/*	    Modified by wedgess @xda	     */
+/*****************************************/
+
+
+void show_multi_flash_menu() {
+    static char* headers_dir[] = { "Choose a set of zip files",
+                                   NULL
+    };
+    static char* headers[] = {  "Select files to install...",
+                                NULL
+    };
+
+    
+    char tmp[PATH_MAX];
+    char* zip_folder = NULL;
+
+    struct stat st;
+    ensure_path_mounted("/sdcard");
+    sprintf(tmp, "/sdcard");
+    stat(tmp, &st);
+    if (S_ISDIR(st.st_mode)) {
+        zip_folder = "/sdcard/";
+        if (no_files_found) {
+            ui_print("Zip files must be on root of /sdcard\n");
+        }
+
+    if (zip_folder == NULL) {
+        if (!(S_ISDIR(st.st_mode)))
+            ui_print("\nMake sure zip files are present on root of /sdcard");
+        return;
+    }
+}
+
+    int dir_len = strlen(zip_folder);
+    int numFiles = 0;
+    char** files = gather_files(zip_folder, ".zip", &numFiles);
+    if (numFiles == 0) {
+        ui_print("No zip files found on root of /sdcard\n");
+    } else {
+        char** list = (char**) malloc((numFiles + 3) * sizeof(char*));
+        list[0] = strdup("====== Select/Unselect All ======\n");
+        list[1] = strdup("====== Flash Selected Files ======\n");
+        list[numFiles+2] = NULL;
+
+        int i;
+        for(i=2; i < numFiles+2; i++) {
+            list[i] = strdup(files[i-2] + dir_len - 4);
+            strncpy(list[i], "(x) ", 4);
+        }
+
+        static int select_all = 1;
+        int chosen_item;
+        for (;;)
+        {
+            chosen_item = get_menu_selection(headers, list, 0, 0);
+            if (chosen_item == GO_BACK)
+                break;
+            if (chosen_item == 1)
+                break;
+            if (chosen_item == 0) {
+                select_all ^= 1;
+                for(i=2; i < numFiles+2; i++) {
+                    if (select_all) strncpy(list[i], "(x)", 3);
+                    else strncpy(list[i], "( )", 3);
+                }
+            } else if (strncmp(list[chosen_item], "( )", 3) == 0) {
+                strncpy(list[chosen_item], "(x)", 3);
+            } else if (strncmp(list[chosen_item], "(x)", 3) == 0) {
+                strncpy(list[chosen_item], "( )", 3);
+            }
+        }
+
+        if (chosen_item == 1) {
+            static char confirm[PATH_MAX];
+            sprintf(confirm, "Yes - Install zips from /sdcard", basename(zip_folder));
+            if (confirm_selection("Install selected files?", confirm))
+            {
+                for(i=2; i < numFiles+2; i++) {
+                    if (strncmp(list[i], "(x)", 3) == 0) {
+                        if (install_zip(files[i-2]) != 0)
+                            break;
+                    }
+                }
+            }
+        }
+        free_string_array(list);
+    }
+    free_string_array(files);
+}
+
 
 void show_nandroid_restore_menu(const char* path)
 {
