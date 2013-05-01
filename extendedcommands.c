@@ -1426,6 +1426,44 @@ void wipe_battery_stats()
     ui_print("Battery Stats wiped.\n");
 }
 
+
+// launch aromafm.zip from default locations
+static int default_aromafm(const char* aromafm_path) {
+        if (ensure_path_mounted(aromafm_path) != 0)
+            return -1;
+
+        char aroma_file[PATH_MAX];
+        sprintf(aroma_file, "%s/aromafm.zip", aromafm_path);
+        if (access(aroma_file, F_OK) != -1) {
+           // force_wait = -1;
+            install_zip(aroma_file);
+            return 0;
+        }
+        return -1;
+}
+
+void run_aroma_browser() {
+                    //we mount volumes so that they can be accessed when in aroma file manager gui
+                    if (volume_for_path("/sdcard") != NULL)
+                        ensure_path_mounted("/sdcard");
+                    if (volume_for_path("/external_sd") != NULL)
+                        ensure_path_mounted("/external_sd");
+                    if (volume_for_path("/emmc") != NULL)
+                        ensure_path_mounted("/emmc");
+
+                    //look for aromafm.zip in /external_sd, then /sdcard and finally /emmc
+                    int ret = -1;
+                    if (volume_for_path("/external_sd") != NULL)
+                        ret = default_aromafm("/external_sd");
+                    if (ret != 0 && volume_for_path("/sdcard") != NULL)
+                        ret = default_aromafm("/sdcard");
+                    if (ret != 0 && volume_for_path("/emmc") != NULL)
+                        ret = default_aromafm("/emmc");
+                    if (ret != 0)
+                        ui_print("No aromafm.zip on sdcard\n");
+}
+
+
 void show_advanced_menu()
 {
     static char* headers[] = {  "Advanced Menu",
@@ -1433,7 +1471,7 @@ void show_advanced_menu()
                                 NULL
     };
 
-    static char* list[] = { "reboot recovery",
+    static char* list[] = { "Aroma File Manager",
                             "Wipe Battery Stats",
                             "wipe dalvik cache",
                             "report error",
@@ -1463,8 +1501,8 @@ void show_advanced_menu()
             break;
         switch (chosen_item)
         {
-            case 0:
-                android_reboot(ANDROID_RB_RESTART2, 0, "recovery");
+	    case 0:
+                run_aroma_browser();
                 break;
             case 1:
             {
