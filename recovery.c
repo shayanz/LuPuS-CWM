@@ -450,7 +450,7 @@ get_menu_selection(char** headers, char** items, int menu_only,
             if (ui_text_ever_visible()) {
                 continue;
             } else {
-                LOGI("timed out waiting for key input; rebooting.\n");
+                LOGI("Timed out waiting for key input; Rebooting.\n");
                 ui_end_menu();
                 return ITEM_REBOOT;
             }
@@ -514,7 +514,7 @@ update_directory(const char* path, const char* unmount_when_done) {
     struct dirent* de;
     d = opendir(path);
     if (d == NULL) {
-        LOGE("error opening %s: %s\n", path, strerror(errno));
+        LOGE("Error opening %s: %s!\n", path, strerror(errno));
         if (unmount_when_done != NULL) {
             ensure_path_unmounted(unmount_when_done);
         }
@@ -661,7 +661,7 @@ wipe_data(int confirm) {
         }
     }
 
-    ui_print("\n-- Wiping data...\n");
+    ui_print("\n-- Wiping all Data...\n");
     device_wipe_data();
     erase_volume("/data");
     erase_volume("/cache");
@@ -837,7 +837,7 @@ main(int argc, char **argv) {
     // If these fail, there's not really anywhere to complain...
     freopen(TEMPORARY_LOG_FILE, "a", stdout); setbuf(stdout, NULL);
     freopen(TEMPORARY_LOG_FILE, "a", stderr); setbuf(stderr, NULL);
-    printf("Starting recovery on %s", ctime(&start));
+    printf("Starting recovery on %s (GMT)", ctime(&start));
 
     device_ui_init(&ui_parameters);
     ui_init();
@@ -961,10 +961,12 @@ main(int argc, char **argv) {
     }
 
     setup_adbd();
+    write_recovery_version();
 
     if (status != INSTALL_SUCCESS && !is_user_initiated_recovery) {
         ui_set_show_text(1);
         ui_set_background(BACKGROUND_ICON_ERROR);
+        handle_failure(1);
     }
     if (status != INSTALL_SUCCESS || ui_text_visible()) {
         prompt_and_wait();

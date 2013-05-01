@@ -328,10 +328,10 @@ int run_and_remove_extendedcommand()
     }
     remove("/sdcard/clockworkmod/.recoverycheckpoint");
     if (i == 0) {
-        ui_print("Timed out waiting for SD card... continuing anyways.");
+        ui_print("Timed out waiting for SD card... Continuing anyway.");
     }
 
-    ui_print("Verifying SD Card marker...\n");
+    ui_print("Verifying SD card marker...\n");
     struct stat st;
     if (stat("/sdcard/clockworkmod/.salted_hash", &st) != 0) {
         ui_print("SD Card marker not found...\n");
