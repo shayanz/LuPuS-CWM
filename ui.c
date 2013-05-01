@@ -232,9 +232,10 @@ static void draw_text_line(int row, const char* t) {
   }
 }
 
-//#define MENU_TEXT_COLOR 255, 160, 49, 255
-#define MENU_TEXT_COLOR 0, 191, 255, 255
-#define NORMAL_TEXT_COLOR 200, 200, 200, 255
+// lupus blue
+#define MENU_TEXT_COLOR 0, 128, 177, 1
+// lupus grey
+#define NORMAL_TEXT_COLOR 153, 153, 153, 1
 #define HEADER_TEXT_COLOR NORMAL_TEXT_COLOR
 
 // Redraw everything on the screen.  Does not flip pages.
