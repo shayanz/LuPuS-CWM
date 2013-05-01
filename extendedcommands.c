@@ -143,13 +143,13 @@ void show_install_update_menu()
                                     NULL };
 
     char *other_sd = NULL;
-    if (volume_for_path("/emmc") != NULL) {
+   /* if (volume_for_path("/emmc") != NULL) {
         other_sd = "/emmc/";
-        install_menu_items[3] = "choose zip from internal sdcard";
-    }
-    else if (volume_for_path("/external_sd") != NULL) {
+        install_menu_items[3] = "Choose zip from internal sdcard";
+    }*/
+    if (volume_for_path("/external_sd") != NULL) {
         other_sd = "/external_sd/";
-        install_menu_items[3] = "choose zip from external sdcard";
+        install_menu_items[3] = "Choose zip from external SD card";
     }
     
     for (;;)
@@ -177,10 +177,6 @@ void show_install_update_menu()
                 if (confirm_selection("Confirm ?", "Yes - Apply Sideload")) {
                     apply_from_adb();
                 }
-                break;
-            case ITEM_CHOOSE_ZIP_INT:
-                if (other_sd != NULL)
-                    show_choose_zip_menu(other_sd);
                 break;
             default:
                 return;
@@ -304,6 +300,7 @@ char** gather_files(const char* directory, const char* fileExtensionOrDirectory,
     return files;
 }
 
+static int no_files_found = 1;
 // pass in NULL for fileExtensionOrDirectory and you will get a directory chooser
 char* choose_file_menu(const char* directory, const char* fileExtensionOrDirectory, const char* headers[])
 {
