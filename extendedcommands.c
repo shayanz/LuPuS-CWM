@@ -169,6 +169,7 @@ void show_install_update_menu()
                     install_zip(SDCARD_UPDATE_FILE);
                 break;
             }
+				break;
             case ITEM_CHOOSE_ZIP:
                 show_choose_zip_menu("/sdcard/");
                 write_recovery_version();
