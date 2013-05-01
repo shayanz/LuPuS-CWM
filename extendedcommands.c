@@ -1256,6 +1256,8 @@ void show_nandroid_menu()
         {
             case 0:
                 {
+		if (confirm_selection("Confirm backup?", "Yes - Start Backup now!"))
+			{
                     char backup_path[PATH_MAX];
                     time_t t = time(NULL);
                     struct tm *tmp = localtime(&t);
@@ -1271,6 +1273,7 @@ void show_nandroid_menu()
                     }
                     nandroid_backup(backup_path);
                     write_recovery_version();
+			}
                 }
                 break;
             case 1:
