@@ -1570,9 +1570,10 @@ void show_wipeall_menu()
                             {
                                 ui_print("\n-- Wiping system...\n");
                        		erase_volume("/system");
-                        	ui_print("\n==Now flash a new ROM!==\n");
+                        	ui_print("\n====== Now flash a new ROM! ======\n");
 			    }
 			}
+                ui_set_background(BACKGROUND_ICON_CLOCKWORK);
 				break;
 			case 1:
 			    {
@@ -1586,6 +1587,7 @@ void show_wipeall_menu()
                 		    erase_volume("/cache");
                 		    ui_print("Cache wipe complete.\n");
                			 }
+                        ui_set_background(BACKGROUND_ICON_CLOCKWORK);
                 		break;
 			case 3:
                 		if (0 != ensure_path_mounted("/data"))
@@ -1601,6 +1603,7 @@ void show_wipeall_menu()
                 		    ui_print("Dalvik cache wipe complete.\n");
                			 }
                			ensure_path_unmounted("/data");
+                        ui_set_background(BACKGROUND_ICON_CLOCKWORK);
                 		break;
          		case 4:
                  	{
@@ -1609,8 +1612,9 @@ void show_wipeall_menu()
                         		wipe_data();
                         		ui_print("-- Wiping system...\n");
                         		erase_volume("/system");
-                        		ui_print("\n==Now flash a new ROM!==\n");
+                        		ui_print("\n====== Now flash a new ROM! ======\n");
 	                    }
+                       ui_set_background(BACKGROUND_ICON_CLOCKWORK);
 			    break;
 	                } 
 			case 5:
@@ -1629,6 +1633,7 @@ void show_wipeall_menu()
                 		    ui_print("Cache and Dalvik Cache Wiped.\n");
                			 }
                			ensure_path_unmounted("/data");
+                        ui_set_background(BACKGROUND_ICON_CLOCKWORK);
                 		break;
 			}
 		}
@@ -1805,6 +1810,11 @@ int verify_root_and_recovery() {
             ret = 1;
             if (confirm_selection("ROM may flash stock recovery on boot. Fix?", "Yes - Disable recovery flash")) {
                 __system("chmod -x /system/etc/install-recovery.sh");
+              /* Fix for GB
+               * __system("rm /system/bin/recovery.tar");
+               * __system("rm /system/bin/chargemon");
+               * __system("rm /system/bin/charger");
+               * __system("cp /sbin/chargemon /system/bin/chargemon"); */
             }
         }
     }
