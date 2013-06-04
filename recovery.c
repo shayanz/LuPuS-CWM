@@ -303,7 +303,7 @@ finish_recovery(const char *send_intent) {
     sync();  // For good measure.
 }
 
-/*static*/int //to be able to call it from wipe options
+/*static*/ int //to be able to call it from wipe menu
 erase_volume(const char *volume) {
     ui_set_background(BACKGROUND_ICON_INSTALLING);
     ui_show_indeterminate_progress();
@@ -629,22 +629,14 @@ update_directory(const char* path, const char* unmount_when_done) {
     return result;
 }
 
-/*static*/void
+/*static*/ void
 wipe_data(int confirm) {
     if (confirm) {
         /*static*/char** title_headers = NULL;
 
         if (title_headers == NULL) {
-            char* headers[] = { "Confirm Wipe of all User Data?",
-
-                                " \n Following Partitions will be WIPED:\n",
-				"     /data",
-				"     /cache",
-				"     /sd-ext",
-				"     /sdcard/.android_secure",
-                                "",
-                                "  THIS CANNOT BE REVERSED.",
-                                "",
+            char* headers[] = { "Confirm wipe of all user data?",
+                                "  THIS CANNOT BE UNDONE.",
                                 NULL };
             title_headers = prepend_title((const char**)headers);
         }
@@ -735,6 +727,10 @@ prompt_and_wait() {
             case ITEM_ADVANCED:
                 show_advanced_menu();
                 break;
+
+            case ITEM_POWEROFF:
+                poweroff = 1;
+                return;
         }
     }
 }
@@ -766,7 +762,7 @@ setup_adbd() {
                 check_and_fclose(file_dest, key_dest);
 
                 // Enable secure adbd
-                property_set("ro.adb.secure", "0");
+                property_set("ro.adb.secure", "1");
             }
             check_and_fclose(file_src, key_src);
         }
@@ -841,7 +837,7 @@ main(int argc, char **argv) {
     // If these fail, there's not really anywhere to complain...
     freopen(TEMPORARY_LOG_FILE, "a", stdout); setbuf(stdout, NULL);
     freopen(TEMPORARY_LOG_FILE, "a", stderr); setbuf(stderr, NULL);
-    printf("Starting recovery on %s (GMT)", ctime(&start));
+    printf("Starting recovery on GMT - %s", ctime(&start));
 
     device_ui_init(&ui_parameters);
     ui_init();
@@ -965,12 +961,10 @@ main(int argc, char **argv) {
     }
 
     setup_adbd();
-    write_recovery_version();
 
     if (status != INSTALL_SUCCESS && !is_user_initiated_recovery) {
         ui_set_show_text(1);
         ui_set_background(BACKGROUND_ICON_ERROR);
-        handle_failure(1);
     }
     if (status != INSTALL_SUCCESS || ui_text_visible()) {
         prompt_and_wait();

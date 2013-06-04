@@ -143,11 +143,11 @@ void show_install_update_menu()
                                     NULL };
 
     char *other_sd = NULL;
-   /* if (volume_for_path("/emmc") != NULL) {
+    if (volume_for_path("/emmc") != NULL) {
         other_sd = "/emmc/";
         install_menu_items[3] = "Choose zip from internal sdcard";
-    }*/
-    if (volume_for_path("/external_sd") != NULL) {
+    }
+    else if (volume_for_path("/external_sd") != NULL) {
         other_sd = "/external_sd/";
         install_menu_items[3] = "Choose zip from external SD card";
     }
@@ -177,6 +177,10 @@ void show_install_update_menu()
             case ITEM_APPLY_SIDELOAD:
                     apply_from_adb();
                 break;
+          /*  case ITEM_CHOOSE_ZIP_INT:
+                if (other_sd != NULL)
+                    show_choose_zip_menu(other_sd);
+                break; */
             default:
                 return;
         }
@@ -718,7 +722,7 @@ int confirm_selection(const char* title, const char* confirm)
     if (0 == stat("/sdcard/clockworkmod/.no_confirm", &info))
         return 1;
 
-    char* confirm_headers[]  = {  title, "  THIS CANNOT BE REVERSED.", "", NULL };
+    char* confirm_headers[]  = {  title, "  THIS CANNOT BE UNDONE.", "", NULL };
     int one_confirm = 0 == stat("/sdcard/clockworkmod/.one_confirm", &info);
 #ifdef BOARD_TOUCH_RECOVERY
     one_confirm = 1;
@@ -1104,10 +1108,12 @@ void show_nandroid_advanced_restore_menu(const char* path)
                                 NULL
     };
 
-    static char* list[] = { "Restore /system",
+    static char* list[] = { "Restore /boot",
+                            "Restore /system",
                             "Restore /data",
                             "Restore /cache",
                             "Restore /sd-ext",
+                            "Restore /wimax",
                             NULL
     };
     
@@ -1121,30 +1127,30 @@ void show_nandroid_advanced_restore_menu(const char* path)
     int chosen_item = get_menu_selection(headers, list, 0, 0);
     switch (chosen_item)
     {
-       /* case 0:
-            if (confirm_selection(confirm_restore, "Yes - Restore /boot"))
-               nandroid_restore(file, 1, 0, 0, 0, 0, 0);
-            break;*/
         case 0:
-            if (confirm_selection(confirm_restore, "Yes - Restore /system"))
+            if (confirm_selection(confirm_restore, "Yes - Restore /boot"))
                 nandroid_restore(file, 1, 0, 0, 0, 0, 0);
             break;
         case 1:
-            if (confirm_selection(confirm_restore, "Yes - Restore /data"))
+            if (confirm_selection(confirm_restore, "Yes - Restore /system"))
                 nandroid_restore(file, 0, 1, 0, 0, 0, 0);
             break;
         case 2:
-            if (confirm_selection(confirm_restore, "Yes - Restore /cache"))
+            if (confirm_selection(confirm_restore, "Yes - Restore /data"))
                 nandroid_restore(file, 0, 0, 1, 0, 0, 0);
             break;
         case 3:
-            if (confirm_selection(confirm_restore, "Yes - Restore /sd-ext"))
+            if (confirm_selection(confirm_restore, "Yes - Restore /cache"))
                 nandroid_restore(file, 0, 0, 0, 1, 0, 0);
             break;
-        /*case 4:
+        case 4:
+            if (confirm_selection(confirm_restore, "Yes - Restore /sd-ext"))
+                nandroid_restore(file, 0, 0, 0, 0, 1, 0);
+            break;
+        case 5:
             if (confirm_selection(confirm_restore, "Yes - Restore /wimax"))
                 nandroid_restore(file, 0, 0, 0, 0, 0, 1);
-            break;*/
+            break;
     }
 }
 
@@ -1160,7 +1166,7 @@ static void run_dedupe_gc(const char* other_sd) {
 }
 
 static void choose_default_backup_format() {
-    static char* headers[] = {  "Default backup format",
+    static char* headers[] = {  "Default Backup Format",
                                 "",
                                 NULL
     };
