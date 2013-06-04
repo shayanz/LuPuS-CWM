@@ -22,12 +22,13 @@
 
 char* MENU_HEADERS[] = { NULL };
 
-char* MENU_ITEMS[] = { "Install Zip",
+char* MENU_ITEMS[] = { "Reboot System Now",
+                       "Install Zip",
                        "Wipe Options",
                        "Backup and Restore",
                        "Mounts and Storage",
                        "Advanced",
-                       "Reboot Options",
+                       "Power Off",
                        NULL };
 
 void device_ui_init(UIParameters* ui_parameters) {

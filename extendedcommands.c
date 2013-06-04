@@ -1582,7 +1582,7 @@ void show_wipeall_menu()
 				break;
 			case 1:
 			    {
-               			wipe_data();
+               			wipe_data(1);
 			    }
 				break;
 			case 2:
@@ -1614,7 +1614,7 @@ void show_wipeall_menu()
                  	{
                     		if (confirm_selection("Confirm wipe data & system?", "Yes, I will install a new ROM!")) {
                                         ui_print("\n-- Wiping data...\n");
-                        		wipe_data();
+                        		wipe_data(1);
                         		ui_print("-- Wiping system...\n");
                         		erase_volume("/system");
                         		ui_print("\n====== Now flash a new ROM! ======\n");
