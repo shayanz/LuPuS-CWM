@@ -121,8 +121,8 @@ int install_zip(const char* packagefilepath)
 }
 
 #define ITEM_CHOOSE_ZIP       0
-#define ITEM_MULTI_FLASH      1
-#define ITEM_APPLY_UPDATE     2
+#define ITEM_APPLY_UPDATE     1
+#define ITEM_MULTI_FLASH      2
 #define ITEM_APPLY_SIDELOAD   3
 #define ITEM_SIG_CHECK        4 
 //#define ITEM_CHOOSE_ZIP_INT   3
