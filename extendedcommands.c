@@ -135,8 +135,8 @@ void show_install_update_menu()
     };
     
     char* install_menu_items[] = {  "Choose zip from SD card",
-				    "Choose Multiple zips from SD card",
                                     "Apply /sdcard/update.zip",
+				    "Choose Multiple zips from SD card",
                                     "Install zip from Sideload",
                                     "Toggle Signature Verification",
                                     NULL,
